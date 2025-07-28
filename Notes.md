@@ -1,0 +1,7 @@
+- The bio can be stored off chain
+- If a user already has an allocation amount that is full, we send the rest into the next season.
+- we take a percentage on every season allocation amount for the protocol.
+- spendback is the allocation we give back to users for using the protocol
+- the spendback would be taking from internal baalnces
+- create chapter mints new token id
+- book creation cost
