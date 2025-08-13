@@ -6,7 +6,7 @@ library Constants {
 
     uint8 constant SET_GENRE_COUNT = 3;
     uint8 constant MAX_CHARACTER_LENGTH = 30;
-    uint8 constant MIN_CHAPTER_LOCK = 3;
+    uint8 constant MIN_CHAPTER_LOCK = 2;
     uint256 constant SPEND_BACK_SHARE = 0.5e18; // 50%
     uint256 constant WAD = 1e18; // 100%
 
@@ -20,8 +20,9 @@ library Constants {
         "EuphoriaBook(uint16 chapterLock,string name,string coverImage,uint256[] genre,uint256 nonce,uint256 deadline)"
     );
     // release chapter typehash
-    bytes32 constant RELEASE_CHAPTER_TYPEHASH =
-        keccak256("ReleaseChapter(uint256 bookId,string title,bool finale,uint256 nonce,uint256 deadline)");
+    bytes32 constant RELEASE_CHAPTER_TYPEHASH = keccak256(
+        "ReleaseChapter(uint256 bookId,string title,string gatedURI,bool finale,uint256 nonce,uint256 deadline)"
+    );
     // subscribe typehash
     bytes32 constant SUBSCRIBE_TYPEHASH =
         keccak256("Subscribe(uint256 subscriptionCost,uint256 nonce,uint256 deadline)");

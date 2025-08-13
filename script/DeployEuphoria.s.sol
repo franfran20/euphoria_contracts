@@ -14,9 +14,9 @@ contract DeployEuphoria is Script {
     uint256 public BOOK_CREATION_COST = 1.1e6; // 1.1 USD
     uint256 public SUBSCRIPTION_COST = 20e6; // 20 USD
     uint256 public SUBSCRIPTION_VOTES = 4; // 4 votes per subscription
-    uint256 public SUBSCRIPTION_DURATION = 15 minutes; // 30 minutes
-    uint256 public VOTING_DELAY = 15 minutes; // 15 minutes
-    uint256 public VOTING_DURATION = 15 minutes; // 15 minutes
+    uint256 public SUBSCRIPTION_DURATION = 15 minutes; // 15 minutes
+    uint256 public VOTING_DELAY = 20 minutes; // 20 minutes
+    uint256 public VOTING_DURATION = 20 minutes; // 20 minutes
 
     function run() public {
         vm.startBroadcast();

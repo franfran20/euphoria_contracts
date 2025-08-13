@@ -44,6 +44,7 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
 
     mapping(uint256 bookId => EuphoriaBook) s_books;
     mapping(uint256 bookId => mapping(uint256 chapterId => string title)) s_chapterTitle;
+    mapping(uint256 bookId => mapping(uint256 chapterId => string gatedURI)) s_chapterGatedURI;
     mapping(uint256 bookId => mapping(uint256 chapterId => uint256 createdAt)) s_chapterCreatedAt;
 
     mapping(uint256 bookId => string name) s_bookName;
@@ -92,9 +93,10 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
         string memory _name,
         string memory _coverImage,
         uint256[] memory _genres
-    ) external {
+    ) external returns (uint256) {
         User memory user = s_users[msg.sender];
-        _createEuphoriaBook(_chapterLock, _name, _coverImage, _genres, msg.sender, user);
+        uint256 bookId = _createEuphoriaBook(_chapterLock, _name, _coverImage, _genres, msg.sender, user);
+        return bookId;
     }
 
     /// @inheritdoc IEuphoriaBookFactory
@@ -104,7 +106,7 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
         string memory _coverImage,
         uint256[] memory _genres,
         SigParams memory _sig
-    ) external checkSigDeadline(_sig.deadline) {
+    ) external checkSigDeadline(_sig.deadline) returns (uint256) {
         User memory user = s_users[_sig.user];
 
         // sig verification
@@ -120,40 +122,44 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
             )
         );
         _validateSig(hashStruct, _sig);
-        _createEuphoriaBook(_chapterLock, _name, _coverImage, _genres, _sig.user, user);
+        uint256 bookId = _createEuphoriaBook(_chapterLock, _name, _coverImage, _genres, _sig.user, user);
+        return bookId;
     }
 
     /* release chapters */
 
     /// @inheritdoc IEuphoriaBookFactory
-    function releaseChapter(uint256 _bookId, string memory _title, bool _finale)
+    function releaseChapter(uint256 _bookId, string memory _title, string memory _gatedURI, bool _finale)
         external
         bookExists(_bookId)
         isBookWriter(_bookId, msg.sender)
+        returns (uint256)
     {
-        _releaseChapter(_bookId, _title, _finale);
+        _releaseChapter(_bookId, _title, _gatedURI, _finale);
     }
 
     /// @inheritdoc IEuphoriaBookFactory
-    function releaseChapterWithSig(uint256 _bookId, string memory _title, bool _finale, SigParams memory _sig)
-        external
-        bookExists(_bookId)
-        isBookWriter(_bookId, _sig.user)
-        checkSigDeadline(_sig.deadline)
-    {
+    function releaseChapterWithSig(
+        uint256 _bookId,
+        string memory _title,
+        string memory _gatedURI,
+        bool _finale,
+        SigParams memory _sig
+    ) external bookExists(_bookId) isBookWriter(_bookId, _sig.user) checkSigDeadline(_sig.deadline) returns (uint256) {
         // sig verification
         bytes32 hashStruct = keccak256(
             abi.encode(
                 Constants.RELEASE_CHAPTER_TYPEHASH,
-                keccak256(bytes(_title)),
                 _bookId,
+                keccak256(bytes(_title)),
+                keccak256((bytes(_gatedURI))),
                 _finale,
                 s_nonces[_sig.user],
                 _sig.deadline
             )
         );
         _validateSig(hashStruct, _sig);
-        _releaseChapter(_bookId, _title, _finale);
+        _releaseChapter(_bookId, _title, _gatedURI, _finale);
     }
 
     /* subscribe */
@@ -272,7 +278,7 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
         uint256[] memory _genres,
         address _user,
         User memory user
-    ) private {
+    ) private returns (uint256) {
         require(user.isWriter, Errors.NotRegisteredWriter());
         require(user.depositedBalance >= s_bookCreationCost, Errors.InsufficientBalance());
         require(_genres.length == uint8(Constants.SET_GENRE_COUNT), Errors.InvalidGenreCount());
@@ -298,10 +304,15 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
         s_coverImage[bookId] = _coverImage;
 
         emit EuphoriaBookCreated(bookId, _coverImage, _name, s_username[_user], _genres, block.timestamp, false, 0, 0);
+
+        return bookId;
     }
 
     /// @dev private function for relaeasing book chapters
-    function _releaseChapter(uint256 _bookId, string memory _title, bool _finale) private {
+    function _releaseChapter(uint256 _bookId, string memory _title, string memory _gatedURI, bool _finale)
+        private
+        returns (uint256)
+    {
         require(!s_books[_bookId].completed, Errors.BookAlreadyCompleted());
 
         s_books[_bookId].chaptersWritten += 1;
@@ -309,6 +320,7 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
         uint256 createdChapter = s_books[_bookId].chaptersWritten;
 
         s_chapterTitle[_bookId][createdChapter] = _title;
+        s_chapterGatedURI[_bookId][createdChapter] = _gatedURI;
         s_chapterCreatedAt[_bookId][createdChapter] = block.timestamp;
         if (_finale) s_books[_bookId].completed = true;
 
@@ -323,6 +335,8 @@ contract EuphoriaBookFactory is IEuphoriaBookFactory {
             _title,
             block.timestamp
         );
+
+        return createdChapter;
     }
 
     /// @dev private function for handling subscriptions

@@ -102,27 +102,35 @@ interface IEuphoriaBookFactory {
         string memory _name,
         string memory _coverImage,
         uint256[] memory _genres
-    ) external;
+    ) external returns (uint256);
     function createEuphoriaBookWithSig(
         uint16 _chapterLock,
         string memory _name,
         string memory _coverImage,
         uint256[] memory _genres,
         SigParams memory _sigParams
-    ) external;
+    ) external returns (uint256);
 
     /**
      * @notice releases a chapter for a particular book
      * @dev some chapter details and content are stored off chain. The chapter content is gated via the hasAccess() and
      *  the chapter lock information set by the writer for the book when the caller is not the book owner and not subscribed
      *  The _finale is basically used to know if the book is completd or not.
+     *  The gated URI redirects to the page that the sa user can visit to access the chapter content if hasAccess() => true
      *  Enforces that
      *  - the book exists
      *  - the chapter title resepcts a fixed max length
      */
-    function releaseChapter(uint256 _bookId, string memory _title, bool _finale) external;
-    function releaseChapterWithSig(uint256 _bookId, string memory _title, bool _finale, SigParams memory _sigParams)
-        external;
+    function releaseChapter(uint256 _bookId, string memory _title, string memory _gatedURI, bool _finale)
+        external
+        returns (uint256);
+    function releaseChapterWithSig(
+        uint256 _bookId,
+        string memory _title,
+        string memory _gatedURI,
+        bool _finale,
+        SigParams memory _sigParams
+    ) external returns (uint256);
 
     /**
      * @notice subscribes a user to be able to view content for a book chapter based on the hasAccess(), the chapter lock and the book owner.
