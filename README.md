@@ -44,6 +44,7 @@ Seasons have different phases. There is a phase where no seaosn is upcoming or c
 
 # Important Notes
 
+- If the site is not functioning when you try, its probably that the server is asleep, try 3 minutes after, it should be booted up by then.
 - Live Demo is also mobile responsive, you can conect wallet with your email.
 - You have to connect wallet => Sign In, before being able to do majority of actions on the platform.
 - Gasless transactions are supported by default.
