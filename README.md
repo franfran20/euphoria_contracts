@@ -1,5 +1,13 @@
 # Euphoria Project Presentation
 
+# Links
+
+- [Youtube video demo](https://youtu.be/qS_tl0Nudao)
+- [Smart Contract Repository](https://github.com/franfran20/euphoria_contracts)
+- [Server Repsoitory](https://github.com/franfran20/euphoria_server)
+- [Frontend Repository](https://github.com/franfran20/euphoria_client)
+- [Live Demo](https://euphoria-client-lilac.vercel.app/)
+
 ### **What is Euphoria?**
 
 Euphoria is an decentralized writing social platform built on Morph. It was built to be a bridge betwen creative writers and book enthusiats. Where these groups of people easily come together to do what they both want, which is read and write.
@@ -52,11 +60,3 @@ Seasons have different phases. There is a phase where no seaosn is upcoming or c
 - Some buggy behaviour occurs with the site due to trying to meet the deadline, if you click a button and its not working, refresh the page and click again.
 - After taking an action if the page hasn't updated, give it a refresh.
 - Disconnect will not work with wallets like metamask, you would have to manually disconnect from metamask. If you connected with other connect methods e.g email, you're good.
-
-# Links
-
-- [Youtube video demo]()
-- [Smart Contract Repository](https://github.com/franfran20/euphoria_contracts)
-- [Server Repsoitory](https://github.com/franfran20/euphoria_server)
-- [Frontend Repository](https://github.com/franfran20/euphoria_client)
-- [Live Demo](https://euphoria-client-lilac.vercel.app/)
